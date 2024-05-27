@@ -1,5 +1,6 @@
 #import matplotlib.pyplot as plt
 import graficarImg as gr
+from scipy import signal
 import numpy as np
 import cv2
 
@@ -34,6 +35,15 @@ def main():
     # aplicar la mascara al canal de saturacion (S), y utilizar una matriz de convolucion conveniente para
     # detectar los bordes de la imagen resultante.
     resultado = cv2.bitwise_and(img1HSV[:,:,1], img1HSV[:,:,1], mask=mascara)
-    gr.plotHSV(resultado)
+    gr.plotHSV(resultado, "Mascara aplicada en el canal de saturacion (S)")
+    
+    # crear matriz de convolucion (Sobel, Gonzalez & Woods p.385) y realizar la convolucion
+    M_CONVOLVE = np.array([[ -3-3j, 0-10j,  +3 -3j],
+                           [-10+0j, 0+ 0j, +10 +0j],
+                           [ -3+3j, 0+10j,  +3 +3j]]) # buen detector de bordes de imagenes
+    resultado2 = signal.convolve2d(resultado, M_CONVOLVE, mode='same')
+    gr.plotHSV(np.absolute(resultado2), "Resultado de la convolucion entre el resultado y la matriz de convolucion")
+    
+    
     
 main()
